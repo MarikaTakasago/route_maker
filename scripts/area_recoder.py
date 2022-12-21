@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-## TODO
-## print guides on rviz
-
 import rospy
 import yaml
 
@@ -13,10 +10,10 @@ from jsk_rviz_plugins.msg import OverlayText
 from route_maker.msg import Area, AreaArray
 
 
-class AreaRecorder:
+class AreaRecoder:
     def __init__(self):
-        rospy.init_node('area_recorder')
-        print('=== Area Recorder ===')
+        rospy.init_node('area_recoder')
+        print('=== Area Recoder ===')
 
         ## check param
         # if rospy.has_param('~PARAM_NAME'):
@@ -43,7 +40,7 @@ class AreaRecorder:
         self.pub_clicked_point = rospy.Publisher('clicked_point_marker', Marker, queue_size=1)
         self.pub_area_marker = rospy.Publisher('area_marker', MarkerArray, queue_size=1)
         self.pub_start_end_points = rospy.Publisher('start_end_point_marker', MarkerArray, queue_size=1)
-        self.pub_guide = rospy.Publisher('area_recorder_guide', OverlayText, queue_size=1)
+        self.pub_guide = rospy.Publisher('area_recoder_guide', OverlayText, queue_size=1)
 
     def init_guide(self):
         self.guide.text = 'Click Start Point of Area'
@@ -125,8 +122,8 @@ class AreaRecorder:
                 self.pub_area.publish(self.area_array)
                 self.id += 1
 
-                self.guide.text = 'Record Success! Click Start Point of Another Area'
-                print('area recorded')
+                self.guide.text = 'Recode Success! Click Start Point of Another Area'
+                print('area recoded')
 
             else:
                 self.show_clicked_point(clicked)
@@ -249,10 +246,6 @@ class AreaRecorder:
             print('shutting down')
 
 if __name__ == '__main__':
-    area_recorder = AreaRecorder()
+    area_recoder = AreaRecoder()
 
-    area_recorder.main()
-
-    #write end of yaml
-    # with open(area_recorder.file_name, 'a') as f:
-    #     yaml.dump(']\n', f)
+    area_recoder.main()
