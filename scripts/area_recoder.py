@@ -71,10 +71,10 @@ class AreaRecorder:
         x = round(msg.point.x,3)
         y = round(msg.point.y,3)
         z = round(msg.point.z,3)
-        clicked = Point()
-        clicked.x = x
-        clicked.y = y
-        clicked.z = z
+        clicked = Point(x,y,z)
+        # clicked.x = x
+        # clicked.y = y
+        # clicked.z = z
         self.points.append(clicked)
 
         if len(self.points) % 4 == 1:
@@ -120,7 +120,7 @@ class AreaRecorder:
                 self.start_end_points.append(clicked)
                 self.show_clicked_points(self.start_end_points)
 
-                self.add_area_to_yaml(self.area)
+                self.add_to_dict(self.area)
                 self.area_array.areas.append(self.area)
                 self.pub_area.publish(self.area_array)
                 self.id += 1
@@ -137,7 +137,7 @@ class AreaRecorder:
         self.pub_guide.publish(self.guide)
 
 
-    def add_area_to_yaml(self,area):
+    def add_to_dict(self,area):
         #  make dict for yaml
         self.area_dict['AREA'].append({'id':area.id,
                                         'p1':{'x':area.p1.x,'y':area.p1.y},
@@ -241,7 +241,6 @@ class AreaRecorder:
             return False
 
     def main(self):
-        rospy.init_node('area_recorder')
         self.init_guide()
         rospy.spin()
         if rospy.is_shutdown():
