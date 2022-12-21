@@ -55,6 +55,8 @@ add_message_files(
   FILES
   Area.msg
   AreaArray.msg
+  Wall.msg
+  WallArray.msg
   PathArray.msg
 #   Message1.msg
 #   Message2.msg

@@ -1,0 +1,19 @@
+WALLS:
+- id: 0
+  start:
+    x: -6.085
+    y: 2.521
+  end:
+    x: -2.066
+    y: 2.59
+  angle: 0.017
+  length: 4.02
+- id: 1
+  start:
+    x: -6.124
+    y: -3.004
+  end:
+    x: -2.026
+    y: -2.734
+  angle: 0.066
+  length: 4.107
