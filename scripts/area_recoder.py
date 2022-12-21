@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
+## TODO
+## print guides on rviz
+
 import rospy
 import yaml
 
 from geometry_msgs.msg import PointStamped, Point
 from visualization_msgs.msg import Marker, MarkerArray
+from jsk_rviz_plugins.msg import OverlayText
 
 from route_maker.msg import Area, AreaArray
 
@@ -12,7 +16,7 @@ from route_maker.msg import Area, AreaArray
 class AreaRecorder:
     def __init__(self):
         rospy.init_node('area_recorder')
-        print('=== area_recorder ===')
+        print('=== Area Recorder ===')
 
         ## check param
         # if rospy.has_param('~PARAM_NAME'):
@@ -28,6 +32,7 @@ class AreaRecorder:
         self.area_dict['AREA'] = []
         self.id = 0
         self.start_end_points = []
+        self.guide = OverlayText()
 
         ## subscriber
         self.sub = rospy.Subscriber('clicked_point', PointStamped, self.callback)
@@ -38,6 +43,29 @@ class AreaRecorder:
         self.pub_clicked_point = rospy.Publisher('clicked_point_marker', Marker, queue_size=1)
         self.pub_area_marker = rospy.Publisher('area_marker', MarkerArray, queue_size=1)
         self.pub_start_end_points = rospy.Publisher('start_end_point_marker', MarkerArray, queue_size=1)
+        self.pub_guide = rospy.Publisher('area_recorder_guide', OverlayText, queue_size=1)
+
+    def init_guide(self):
+        self.guide.text = 'Click Start Point of Area'
+        self.guide.width = 600
+        self.guide.height = 30
+        self.guide.left = 0
+        self.guide.top = 0
+        self.guide.line_width = 2
+        self.guide.text_size = 15
+        self.guide.font = 'DejaVu Sans Mono'
+        # forground color: cyan
+        self.guide.fg_color.r = 0.0
+        self.guide.fg_color.g = 1.0
+        self.guide.fg_color.b = 1.0
+        self.guide.fg_color.a = 1.0
+        # background color: black, a = 0.5
+        self.guide.bg_color.r = 0.0
+        self.guide.bg_color.g = 0.0
+        self.guide.bg_color.b = 0.0
+        self.guide.bg_color.a = 0.5
+
+        self.pub_guide.publish(self.guide)
 
     def callback(self, msg):
         x = round(msg.point.x,3)
@@ -48,16 +76,17 @@ class AreaRecorder:
         clicked.y = y
         clicked.z = z
         self.points.append(clicked)
-        self.show_clicked_point(clicked)
 
         if len(self.points) % 4 == 1:
+            self.show_clicked_point(clicked)
+            self.guide.text = 'Click End Point of Area'
             print('click another point')
 
         elif len(self.points) and len(self.points) % 4 == 2:
+            self.show_clicked_point(clicked)
             self.area.id = self.id
             self.area.p1 = self.points[4*self.id]
             self.area.p3 = clicked
-            # self.calc_a(self.area.p1,self.area.p3)
             self.area.p2.x = self.area.p3.x
             self.area.p2.y = self.area.p1.y
             self.area.p2.z = self.area.p1.z
@@ -67,6 +96,7 @@ class AreaRecorder:
 
             self.show_area(self.area)
 
+            self.guide.text = 'Click Start Point of Cleaning Route'
             print('click start point')
 
         elif len(self.points) and len(self.points) % 4 == 3:
@@ -74,8 +104,13 @@ class AreaRecorder:
                 self.area.start = clicked
                 self.start_end_points.append(clicked)
                 self.show_clicked_points(self.start_end_points)
+
+                self.guide.text = 'Click End Point of Cleaning Route'
                 print('click end point')
+
             else:
+                self.show_clicked_point(clicked)
+                self.guide.text = 'Clicked Point is not in Area'
                 print('start point is not in area')
                 self.points.pop(len(self.points)-1)
 
@@ -90,10 +125,16 @@ class AreaRecorder:
                 self.pub_area.publish(self.area_array)
                 self.id += 1
 
+                self.guide.text = 'Record Success! Click Start Point of Another Area'
                 print('area recorded')
+
             else:
+                self.show_clicked_point(clicked)
+                self.guide.text = 'Clicked Point is not in Area'
                 print('end point is not in area')
                 self.points.pop(len(self.points)-1)
+
+        self.pub_guide.publish(self.guide)
 
 
     def add_area_to_yaml(self,area):
@@ -115,7 +156,7 @@ class AreaRecorder:
             marker = Marker()
             marker.header.frame_id = "map"
             marker.header.stamp = rospy.Time.now()
-            marker.ns = "clicked_point"
+            marker.ns = "clicked_points"
             marker.id = i
             marker.type = Marker.SPHERE
             marker.action = Marker.ADD
@@ -201,6 +242,7 @@ class AreaRecorder:
 
     def main(self):
         rospy.init_node('area_recorder')
+        self.init_guide()
         rospy.spin()
         if rospy.is_shutdown():
             with open(self.file_name, 'w') as f:

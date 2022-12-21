@@ -65,10 +65,11 @@ class SimpleCleaningPathMaker:
                 self.get_area = True
 
         def load_area(self):
-            with open(self.area_yaml_file) as f:
-                area_yaml = yaml.safe_load(f)
-            self.get_area = True
-            return area_yaml
+            if self.use_yaml:
+                with open(self.area_yaml_file) as f:
+                    area_yaml = yaml.safe_load(f)
+                self.get_area = True
+                return area_yaml
 
         def load_wall(self):
             with open(self.wall_yaml_file) as f:
