@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="param_name" default="cleaning_area"/>
+    <arg name="file_name" default="$(find route_maker)/config/area.yaml"/>
+    <arg name="map" default="$(find route_maker)/map/dkan.yaml"/>
+
+    <node pkg="route_maker" type="area_recoder.py" name="area_recoder" output="screen">
+        <param name="PARAM_NAME" value="$(arg param_name)"/>
+        <param name="FILE_NAME" value="$(arg file_name)"/>
+    </node>
+
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+</launch>
