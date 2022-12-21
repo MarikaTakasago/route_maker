@@ -158,8 +158,8 @@ class AreaRecoder:
             marker.type = Marker.SPHERE
             marker.action = Marker.ADD
             marker.pose.orientation.w = 1.0
-            marker.scale.x = 0.5
-            marker.scale.y = 0.5
+            marker.scale.x = 0.2
+            marker.scale.y = 0.2
             marker.scale.z = 0.1
             marker.color.a = 1.0
             marker.color.r = color_dict[i%2]['r']
@@ -181,8 +181,8 @@ class AreaRecoder:
         marker.type = Marker.SPHERE
         marker.action = Marker.ADD
         marker.pose.orientation.w = 1.0
-        marker.scale.x = 0.5
-        marker.scale.y = 0.5
+        marker.scale.x = 0.2
+        marker.scale.y = 0.2
         marker.scale.z = 0.1
         marker.color.a = 1.0
         marker.color.r = 1.0

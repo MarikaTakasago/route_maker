@@ -2,6 +2,7 @@
 
 import rospy
 import yaml
+import math
 
 from geometry_msgs.msg import PointStamped, Point
 from visualization_msgs.msg import Marker, MarkerArray
@@ -9,7 +10,7 @@ from jsk_rviz_plugins.msg import OverlayText
 
 from route_maker.msg import Wall, WallArray
 
-class WallRecorder:
+class WallRecoder:
     def __init__(self):
         rospy.init_node('wall_recorder')
         print('=== Wall Recorder ===')
@@ -77,6 +78,10 @@ class WallRecorder:
             self.wall.id = self.id
             self.wall.start = self.points[2*self.id]
             self.wall.end = clicked
+            angle = math.atan2(self.wall.end.y - self.wall.start.y, self.wall.end.x - self.wall.start.x)
+            self.wall.angle = round(angle, 3)
+            length = math.sqrt((self.wall.end.x - self.wall.start.x)**2 + (self.wall.end.y - self.wall.start.y)**2)
+            self.wall.length = round(length, 3)
             self.wall_array.walls.append(self.wall)
             self.show_walls(self.wall_array)
             self.add_to_dict(self.wall)
@@ -86,10 +91,14 @@ class WallRecorder:
 
             self.id += 1
 
+        self.pub_guide.publish(self.guide)
+
     def add_to_dict(self, wall):
         self.wall_dict['WALLS'].append({'id': wall.id,
                                         'start': {'x': wall.start.x, 'y': wall.start.y},
-                                        'end': {'x': wall.end.x, 'y': wall.end.y}})
+                                        'end': {'x': wall.end.x, 'y': wall.end.y},
+                                        'angle': wall.angle,
+                                        'length': wall.length})
 
     def show_clicked_point(self,clicked):
         marker = Marker()
@@ -100,8 +109,8 @@ class WallRecorder:
         marker.type = Marker.SPHERE
         marker.action = Marker.ADD
         marker.pose.orientation.w = 1.0
-        marker.scale.x = 0.5
-        marker.scale.y = 0.5
+        marker.scale.x = 0.2
+        marker.scale.y = 0.2
         marker.scale.z = 0.1
         marker.color.a = 1.0
         marker.color.r = 1.0
@@ -144,8 +153,8 @@ class WallRecorder:
             print('shutting down')
 
 if __name__ == '__main__':
-    wall_recorder = WallRecorder()
-    wall_recorder.main()
+    wall_recoder = WallRecoder()
+    wall_recoder.main()
 
 
 
