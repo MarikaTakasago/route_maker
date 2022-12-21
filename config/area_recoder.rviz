@@ -9,6 +9,7 @@ Panels:
         - /area1
         - /start_end1
         - /wall_guide1
+        - /wall1
       Splitter Ratio: 0.5
     Tree Height: 746
   - Class: rviz/Selection
@@ -92,7 +93,7 @@ Visualization Manager:
       Background Alpha: 0.800000011920929
       Background Color: 0; 0; 0
       Class: jsk_rviz_plugin/OverlayText
-      Enabled: true
+      Enabled: false
       Foreground Alpha: 0.800000011920929
       Foreground Color: 25; 255; 240
       Invert Shadow: false
@@ -101,7 +102,7 @@ Visualization Manager:
       Overtake FG Color Properties: false
       Overtake Position Properties: false
       Topic: /area_recorder_guide
-      Value: true
+      Value: false
       font: DejaVu Sans Mono
       height: 128
       left: 0
@@ -121,7 +122,7 @@ Visualization Manager:
       Overtake BG Color Properties: false
       Overtake FG Color Properties: false
       Overtake Position Properties: false
-      Topic: /guide
+      Topic: /wall_recoder_guide
       Value: true
       font: DejaVu Sans Mono
       height: 128
@@ -135,7 +136,7 @@ Visualization Manager:
       Marker Topic: /wall_marker
       Name: wall
       Namespaces:
-        {}
+        wall: true
       Queue Size: 100
       Value: true
   Enabled: true
