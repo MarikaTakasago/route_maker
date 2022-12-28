@@ -24,7 +24,7 @@ class WallRecoder:
         self.wall = Wall()
         self.wall_array = WallArray()
         self.wall_dict = {}
-        self.wall_dict['WALLS'] = []
+        self.wall_dict['WALL'] = []
         self.id = 0
         self.guide = OverlayText()
 
@@ -94,7 +94,7 @@ class WallRecoder:
         self.pub_guide.publish(self.guide)
 
     def add_to_dict(self, wall):
-        self.wall_dict['WALLS'].append({'id': wall.id,
+        self.wall_dict['WALL'].append({'id': wall.id,
                                         'start': {'x': wall.start.x, 'y': wall.start.y},
                                         'end': {'x': wall.end.x, 'y': wall.end.y},
                                         'angle': wall.angle,
@@ -124,12 +124,13 @@ class WallRecoder:
 
     def show_walls(self, wall_array):
         marker_array = MarkerArray()
+        i = 0
         for wall in wall_array.walls:
             marker = Marker()
             marker.header.frame_id = "map"
             marker.header.stamp = rospy.Time.now()
             marker.ns = "wall"
-            marker.id = wall.id
+            marker.id = i
             marker.type = Marker.LINE_STRIP
             marker.action = Marker.ADD
             marker.pose.orientation.w = 1.0
@@ -141,6 +142,7 @@ class WallRecoder:
             marker.points.append(wall.start)
             marker.points.append(wall.end)
             marker_array.markers.append(marker)
+            i += 1
 
         self.pub_wall_marker.publish(marker_array)
 
