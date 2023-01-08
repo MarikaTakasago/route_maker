@@ -31,6 +31,8 @@ class AreaRecoder:
             self.file_name = rospy.get_param('~FILE_NAME')
             print('file_name: ' + self.file_name)
 
+        self.display = rospy.get_param('~DISPLAY',True)
+
         self.points = []
         self.area = Area()
         self.area_array = AreaArray()

@@ -10,7 +10,6 @@ Panels:
         - /start_end1
         - /area_guide1
         - /wall1
-        - /wall1/Status1
       Splitter Ratio: 0.5
     Tree Height: 746
   - Class: rviz/Selection
@@ -68,7 +67,7 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /area_marker
+      Marker Topic: /area_markers
       Name: area
       Namespaces:
         area: true
@@ -76,10 +75,10 @@ Visualization Manager:
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /start_end_point_marker
+      Marker Topic: /start_end_markers
       Name: start_end
       Namespaces:
-        clicked_points: true
+        start_end: true
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -87,7 +86,7 @@ Visualization Manager:
       Marker Topic: /clicked_point_marker
       Name: Marker
       Namespaces:
-        clicked_point: true
+        {}
       Queue Size: 100
       Value: true
     - Align Bottom: false
@@ -134,7 +133,7 @@ Visualization Manager:
       width: 128
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /wall_marker
+      Marker Topic: /wall_markers
       Name: wall
       Namespaces:
         wall: true
@@ -177,7 +176,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 100.05103302001953
+      Scale: 24.38810920715332
       Target Frame: <Fixed Frame>
       X: -0.5322377681732178
       Y: 0.9033212065696716

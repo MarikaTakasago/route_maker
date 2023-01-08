@@ -24,12 +24,10 @@ class MakeGuideLine:
             self.wall_file = rospy.get_param('~WALL_FILE')
         if rospy.has_param('~WALL_DIST'):
             self.wall_dist = rospy.get_param('~WALL_DIST')
-        if rospy.has_param('~HZ'):
-            self.hz = rospy.get_param('~HZ')
+
+        self.hz = rospy.get_param('~HZ', 10)
 
         self.wall_num = 0
-
-
         self.wall_line_list = []
 
         ## load wall yaml
