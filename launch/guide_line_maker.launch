@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="route_maker" type="guide_line_maker.py" name="guide_line_maker" output="screen" >
+        <param name="WALL_FILE" value="$(find wall_line_matcher)/config/test_wall.yaml" />
+        <param name="WALL_DIST" value="0.5" />
+        <param name="HZ" value="10" />
+    </node>
+
+</launch>

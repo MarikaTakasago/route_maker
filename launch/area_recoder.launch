@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="param_name" default="cleaning_area"/>
+    <arg name="file_name" default="area_mt.yaml"/>
+    <arg name="map" default="$(find route_maker)/map/hamamap.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/dkan.yaml"/> -->
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route_maker)/config/area_recoder.rviz"/>
+
+    <node pkg="route_maker" type="area_recoder.py" name="area_recoder" output="screen">
+        <param name="PARAM_NAME" value="$(arg param_name)"/>
+        <param name="FILE_NAME" value="$(find route_maker)/config/$(arg file_name)"/>
+    </node>
+
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+</launch>

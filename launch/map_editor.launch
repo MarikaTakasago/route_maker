@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="area_file" default="$(find route_maker)/config/area0507.yaml"/>
+    <arg name="wall_file" default="$(find route_maker)/config/wall0529.yaml"/>
+    <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/>
+
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+
+    <node pkg="route_maker" type="map_editor.py" name="map_editor" output="screen">
+        <param name="area_file" value="$(arg area_file)"/>
+        <param name="wall_file" value="$(arg wall_file)"/>
+        <param name="map_file" value="$(arg map)"/>
+        <param name="use_area" value="False"/>
+        <param name="use_wall" value="True"/>
+    </node>
+
+</launch>

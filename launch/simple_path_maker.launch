@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="area_yaml" default="$(find route_maker)/config/area.yaml"/>
+    <arg name="wall_yaml" default="$(find route_maker)/config/wall.yaml"/>
+    <arg name="path_yaml" default="$(find route_maker)/config/path_hama.yaml"/>
+    <arg name="map" default="/home/amsl/pngtopgm/map.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/dkan.yaml"/> -->
+
+    <node pkg="route_maker" type="path_maker.py" name="simple_cleanig_path_maker" output="screen" >
+        <param name="AREA_YAML_FILE" value="$(arg area_yaml)"/>
+        <param name="WALL_YAML_FILE" value="$(arg wall_yaml)"/>
+        <param name="PATH_YAML_FILE" value="$(arg path_yaml)"/>
+        <param name="LINE_SPACE" value="0.5"/>
+    </node>
+
+    <include file="$(find route_maker)/launch/display.launch">
+        <arg name="map" value="$(arg map)"/>
+        <arg name="file_name" value="$(arg area_yaml)"/>
+    </include>
+    <!-- <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)" /> -->
+</launch>

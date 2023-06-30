@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="file_name" default="$(find route_maker)/config/area.yaml"/>
+    <arg name="hz" default="10"/>
+    <arg name="map" default="$(find route_maker)/map/dkan.yaml"/>
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route_maker)/config/route_maker.rviz" output="screen"/>
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+    <node pkg="route_maker" type="display.py" name="display" output="screen">
+        <param name="FILE_NAME" value="$(arg file_name)"/>
+        <param name="HZ" value="$(arg hz)" />
+    </node>
+</launch>

@@ -1,0 +1,8 @@
+image: Urange20Xmin25Ymin25_edit2.pgm
+resolution: 0.010000
+origin: [-30.550000, -23.500000, 0.000000]
+# origin: [-30.750000, -35.560000, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+
