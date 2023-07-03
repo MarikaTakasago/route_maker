@@ -54,7 +54,12 @@ void MapExpander::make_fat_map(nav_msgs::OccupancyGrid raw, nav_msgs::OccupancyG
 
 void MapExpander::process()
 {
-    ros::spin();
+    // ros::spin();
+    ros::Rate loop_rate(10);
+    while(ros::ok())
+    {
+        ros::spinOnce();
+    }
 }
 
 int main(int argc, char** argv)

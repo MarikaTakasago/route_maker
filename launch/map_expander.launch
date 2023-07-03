@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/>
+    <arg name="map" default="$(find route_maker)/map/fix_axis.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
 
     <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
     <node pkg="route_maker" type="map_expander" name="map_expander" output="screen"/>

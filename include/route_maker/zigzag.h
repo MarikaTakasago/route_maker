@@ -74,6 +74,7 @@ class Zigzag
 
         int clicked_counter_;
         double move_direction_;
+        double moved_direction_;
         double v_grav_;
 
         std::string directions_[2] = {"head","keep"};

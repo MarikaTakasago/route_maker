@@ -1,12 +1,17 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
+    <arg name="map" default="$(find route_maker)/map/fix_axis.yaml"/>
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route_maker)/config/area_recoder.rviz"/>
     <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+    <node pkg="route_maker" type="map_expander" name="map_expander" output="screen">
+        <param name="width" value="0,5"/>
+    </node>
 
-    <!-- <node pkg="route_maker" type="zigzag" name="zigzag" output="screen"> -->
-    <!--     <param name="width" value="0.6"/> -->
-    <!--     <param name="length" value="0.8"/> -->
-    <!-- </node> -->
+    <node pkg="route_maker" type="zigzag" name="zigzag" output="screen">
+        <param name="width" value="0.1"/>
+        <param name="length" value="0.8"/>
+        <remap from="map" to="expanded_map"/>
+    </node>
 </launch>
