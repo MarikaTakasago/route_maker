@@ -1,0 +1,338 @@
+PATH_FRAME:
+- map
+OCC_MAP_NAME:
+- map
+MAP_DIRECTION:
+- '0.0'
+NODE:
+- id: 0
+  type: 0
+  pose:
+    x: 2.46
+    y: -7.76
+    direction: keep
+- id: 1
+  type: 0
+  pose:
+    x: -0.1
+    y: -7.78
+    direction: head
+- id: 2
+  type: 0
+  pose:
+    x: -0.1
+    y: -7.48
+    direction: keep
+- id: 3
+  type: 0
+  pose:
+    x: 2.48
+    y: -7.48
+    direction: head
+- id: 4
+  type: 0
+  pose:
+    x: 2.48
+    y: -7.18
+    direction: keep
+- id: 5
+  type: 0
+  pose:
+    x: -0.94
+    y: -7.18
+    direction: keep
+- id: 6
+  type: 0
+  pose:
+    x: -0.94
+    y: -7.8
+    direction: keep
+- id: 7
+  type: 0
+  pose:
+    x: -2.4
+    y: -7.8
+    direction: head
+- id: 8
+  type: 0
+  pose:
+    x: -2.4
+    y: -7.5
+    direction: keep
+- id: 9
+  type: 0
+  pose:
+    x: -0.94
+    y: -7.5
+    direction: head
+- id: 10
+  type: 0
+  pose:
+    x: -0.94
+    y: -7.2
+    direction: keep
+- id: 11
+  type: 0
+  pose:
+    x: -2.42
+    y: -7.2
+    direction: head
+- id: 12
+  type: 0
+  pose:
+    x: -2.42
+    y: -7.1
+    direction: keep
+- id: 13
+  type: 0
+  pose:
+    x: 0.5
+    y: -7.1
+    direction: head
+- id: 14
+  type: 0
+  pose:
+    x: 0.5
+    y: -6.8
+    direction: keep
+- id: 15
+  type: 0
+  pose:
+    x: -2.4
+    y: -6.8
+    direction: head
+- id: 16
+  type: 0
+  pose:
+    x: -2.4
+    y: -6.5
+    direction: keep
+- id: 17
+  type: 0
+  pose:
+    x: 0.5
+    y: -6.5
+    direction: head
+- id: 18
+  type: 0
+  pose:
+    x: 0.5
+    y: -6.2
+    direction: keep
+- id: 19
+  type: 0
+  pose:
+    x: -2.4
+    y: -6.2
+    direction: head
+- id: 20
+  type: 0
+  pose:
+    x: -2.4
+    y: -6.14
+    direction: keep
+- id: 21
+  type: 0
+  pose:
+    x: 1.34
+    y: -6.14
+    direction: keep
+- id: 22
+  type: 0
+  pose:
+    x: 1.34
+    y: -7.16
+    direction: keep
+- id: 23
+  type: 0
+  pose:
+    x: 2.48
+    y: -7.16
+    direction: head
+- id: 24
+  type: 0
+  pose:
+    x: 2.48
+    y: -6.86
+    direction: keep
+- id: 25
+  type: 0
+  pose:
+    x: 1.34
+    y: -6.86
+    direction: head
+- id: 26
+  type: 0
+  pose:
+    x: 1.34
+    y: -6.56
+    direction: keep
+- id: 27
+  type: 0
+  pose:
+    x: 2.48
+    y: -6.56
+    direction: head
+- id: 28
+  type: 0
+  pose:
+    x: 2.48
+    y: -6.54
+    direction: keep
+- id: 29
+  type: 0
+  pose:
+    x: 1.34
+    y: -6.54
+    direction: head
+- id: 30
+  type: 0
+  pose:
+    x: 1.34
+    y: -6.24
+    direction: keep
+- id: 31
+  type: 0
+  pose:
+    x: 1.86
+    y: -6.24
+    direction: head
+- id: 32
+  type: 0
+  pose:
+    x: 1.86
+    y: -6.14
+    direction: keep
+EDGE:
+- command: 0
+  start_node_id: 0
+  end_node_id: 1
+  skippable: false
+- command: 0
+  start_node_id: 1
+  end_node_id: 2
+  skippable: false
+- command: 0
+  start_node_id: 2
+  end_node_id: 3
+  skippable: false
+- command: 0
+  start_node_id: 3
+  end_node_id: 4
+  skippable: false
+- command: 0
+  start_node_id: 4
+  end_node_id: 5
+  skippable: false
+- command: 0
+  start_node_id: 5
+  end_node_id: 6
+  skippable: false
+- command: 0
+  start_node_id: 6
+  end_node_id: 7
+  skippable: false
+- command: 0
+  start_node_id: 7
+  end_node_id: 8
+  skippable: false
+- command: 0
+  start_node_id: 8
+  end_node_id: 9
+  skippable: false
+- command: 0
+  start_node_id: 9
+  end_node_id: 10
+  skippable: false
+- command: 0
+  start_node_id: 10
+  end_node_id: 11
+  skippable: false
+- command: 0
+  start_node_id: 11
+  end_node_id: 12
+  skippable: false
+- command: 0
+  start_node_id: 12
+  end_node_id: 13
+  skippable: false
+- command: 0
+  start_node_id: 13
+  end_node_id: 14
+  skippable: false
+- command: 0
+  start_node_id: 14
+  end_node_id: 15
+  skippable: false
+- command: 0
+  start_node_id: 15
+  end_node_id: 16
+  skippable: false
+- command: 0
+  start_node_id: 16
+  end_node_id: 17
+  skippable: false
+- command: 0
+  start_node_id: 17
+  end_node_id: 18
+  skippable: false
+- command: 0
+  start_node_id: 18
+  end_node_id: 19
+  skippable: false
+- command: 0
+  start_node_id: 19
+  end_node_id: 20
+  skippable: false
+- command: 0
+  start_node_id: 20
+  end_node_id: 21
+  skippable: false
+- command: 0
+  start_node_id: 21
+  end_node_id: 22
+  skippable: false
+- command: 0
+  start_node_id: 22
+  end_node_id: 23
+  skippable: false
+- command: 0
+  start_node_id: 23
+  end_node_id: 24
+  skippable: false
+- command: 0
+  start_node_id: 24
+  end_node_id: 25
+  skippable: false
+- command: 0
+  start_node_id: 25
+  end_node_id: 26
+  skippable: false
+- command: 0
+  start_node_id: 26
+  end_node_id: 27
+  skippable: false
+- command: 0
+  start_node_id: 27
+  end_node_id: 28
+  skippable: false
+- command: 0
+  start_node_id: 28
+  end_node_id: 29
+  skippable: false
+- command: 0
+  start_node_id: 29
+  end_node_id: 30
+  skippable: false
+- command: 0
+  start_node_id: 30
+  end_node_id: 31
+  skippable: false
+- command: 0
+  start_node_id: 31
+  end_node_id: 32
+  skippable: false
+- command: 0
+  start_node_id: 32
+  end_node_id: 0
+  skippable: false

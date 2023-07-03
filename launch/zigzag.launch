@@ -10,7 +10,7 @@
     </node>
 
     <node pkg="route_maker" type="zigzag" name="zigzag" output="screen">
-        <param name="width" value="0.1"/>
+        <param name="width" value="0.3"/>
         <param name="length" value="0.8"/>
         <remap from="map" to="expanded_map"/>
     </node>

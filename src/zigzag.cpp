@@ -432,7 +432,7 @@ void Zigzag::publish_path()
     pub_node_edge_.publish(path);
 }
 
-void Zigzag::fill_in_msg(std::vector<node> nodes,brushee_navigation_msgs::NodeEdge path)
+void Zigzag::fill_in_msg(std::vector<node> nodes,brushee_navigation_msgs::NodeEdge &path)
 {
     for(auto n : nodes)
     {

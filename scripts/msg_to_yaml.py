@@ -39,7 +39,7 @@ class MsgToYaml:
         self.path_dict['NODE'] = []
         self.path_dict['EDGE'] = []
 
-        self.yaml_file = rospy.get_param('~yaml_file', 'path.yaml')
+        self.yaml_file = rospy.get_param('~yaml_file', 'path0703_2.yaml')
         self.msg_topic = rospy.get_param('~msg_topic', '/new_node_edge')
 
         rospy.Subscriber(self.msg_topic, NodeEdge, self.msg_callback)
@@ -53,6 +53,8 @@ class MsgToYaml:
 
         self.msg = msg
         for n in msg.nodes:
+            n.pose.position.x = round(n.pose.position.x, 2)
+            n.pose.position.y = round(n.pose.position.y, 2)
             self.nodes.append(node(n.id, n.type, n.pose, n.direction))
         for e in msg.edges:
             self.edges.append(edge(e.start_node_id, e.end_node_id, e.command, e.skippable))
@@ -64,14 +66,14 @@ class MsgToYaml:
 
     def add_to_dict(self,node,edge,path_dict):
         for n in node:
-            path_dict['NODE'].append({'id':n.id, 'type':n.type, 'x':n.pose.x, 'y':n.pose.y, 'direction':n.direction})
+            path_dict['NODE'].append({'id':n.node_id, 'type':n.type, 'pose':{'x':n.pose.position.x, 'y':n.pose.position.y, 'direction':n.direction}})
 
         for e in edge:
             path_dict['EDGE'].append({'command':e.command, 'start_node_id':e.start, 'end_node_id':e.end, 'skippable':e.skippable})
 
     def write_yaml(self):
         with open(self.yaml_file, 'w') as f:
-            yaml.dump(self.path_dict, f)
+            yaml.dump(self.path_dict, f,sort_keys=False)
         print('Write to yaml file:', self.yaml_file)
 
     def process(self):
