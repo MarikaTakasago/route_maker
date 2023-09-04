@@ -39,7 +39,7 @@ class MsgToYaml:
         self.path_dict['NODE'] = []
         self.path_dict['EDGE'] = []
 
-        self.yaml_file = rospy.get_param('~yaml_file', 'path0703_2.yaml')
+        self.yaml_file = rospy.get_param('~yaml_file', 'ari_g2.yaml')
         self.msg_topic = rospy.get_param('~msg_topic', '/new_node_edge')
 
         rospy.Subscriber(self.msg_topic, NodeEdge, self.msg_callback)
@@ -55,7 +55,19 @@ class MsgToYaml:
         for n in msg.nodes:
             n.pose.position.x = round(n.pose.position.x, 2)
             n.pose.position.y = round(n.pose.position.y, 2)
-            self.nodes.append(node(n.id, n.type, n.pose, n.direction))
+            #if same x and y or node id as last node slip it
+            id_checker = 0
+            if len(self.nodes) > 0:
+                if n.pose.position.x == self.nodes[-1].pose.position.x and n.pose.position.y == self.nodes[-1].pose.position.y:
+                    continue
+                if n.id - self.nodes[-1].node_id > 3:
+                    continue
+                for i in range(len(self.nodes)):
+                    if n.id == self.nodes[i].node_id:
+                        id_checker = 1
+                        break
+            if id_checker == 0:
+                self.nodes.append(node(n.id, n.type, n.pose, n.direction))
         for e in msg.edges:
             self.edges.append(edge(e.start_node_id, e.end_node_id, e.command, e.skippable))
         # print('nodes:', self.nodes)

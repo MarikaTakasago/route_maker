@@ -19,10 +19,14 @@ class MapExpander
         double width_;
         double length_;
 
+        bool is_received_;
+
         ros::NodeHandle nh_;
         ros::NodeHandle private_nh_;
         ros::Subscriber sub_map_;
         ros::Publisher pub_map_;
+
+        nav_msgs::OccupancyGrid edited_map_;
 };
 
 #endif

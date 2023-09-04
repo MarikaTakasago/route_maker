@@ -18,6 +18,7 @@ Zigzag::Zigzag(): private_nh_("~")
     get_map_ = false;
     clicked_counter_ = 0;
     is_invalid_ = false;
+    short_node_ = -1;
 
     //header
     nav_path_.header.frame_id ="map";
@@ -28,7 +29,7 @@ void Zigzag::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
     raw_map_ = *msg;
     passed_map_ = *msg;
     map_roughther(raw_map_);
-    std::cout<<"get map"<<std::endl;
+    if(!get_map_) std::cout<<"get map"<<std::endl;
     get_map_ = true;
 }
 
@@ -45,9 +46,10 @@ void Zigzag::clicked_callback(const geometry_msgs::PointStamped::ConstPtr &msg)
         clicked_.y = double(y);
         clicked_counter_++;
 
-        switch(clicked_counter_)
+        switch(clicked_counter_%3)
         {
             case 1:
+                reset_all();
                 start_ = clicked_;
                 std::cout<<"get start point ("<<clicked_.x<<","<<clicked_.y<<")"<<std::endl;
                 break;
@@ -57,11 +59,12 @@ void Zigzag::clicked_callback(const geometry_msgs::PointStamped::ConstPtr &msg)
                 std::cout<<"get move direction: "<<move_direction_<<std::endl;
                 break;
 
-            case 3:
+            case 0:
                 std::cout<<"get goal point ("<<clicked_.x<<","<<clicked_.y<<")"<<std::endl;
                 path_maker(raw_map_,move_direction_,start_,clicked_);
                 publish_path();
                 clicked_counter_ = 0; //reset counter
+                short_node_ = -1; //reset
                 break;
 
             default:
@@ -74,6 +77,14 @@ void Zigzag::clicked_callback(const geometry_msgs::PointStamped::ConstPtr &msg)
 void Zigzag::map_roughther(nav_msgs::OccupancyGrid raw_map)
 {
 
+}
+
+void Zigzag::reset_all()
+{
+    nodes_.clear();
+    edges_.clear();
+    closed_.clear();
+    nav_path_.poses.clear();
 }
 
 void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, point start, point goal)
@@ -205,9 +216,6 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             else if(map.data[next_index] == 100)
             {
                 // put checking_point in nodes
-                // consider length between base_link and head
-                // checking_point.x -= length_/2 * std::cos(moving_direction);
-                // checking_point.y -= length_/2 * std::sin(moving_direction);
                 geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
                 struct node n = {i,0,pose,directions_[0]};
                 nodes_.push_back(n);
@@ -240,12 +248,32 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
 
         moved_direction_ = moving_direction;
         double next_moving_direction = set_moving_direction(map,moving_direction,checking_point);
-        if(next_moving_direction == -100 || fabs(next_moving_direction - v_grav_)<0.1)
+        // if(next_moving_direction == -100)
+        // {
+        //     std::cout<<"path end"<<std::endl;
+        //     break;
+        // }
+        if(next_moving_direction == -100 || (nodes_[i-2].pose.position.x == nodes_[i-3].pose.position.x && nodes_[i-2].pose.position.y == nodes_[i-3].pose.position.y))
         {
-            std::cout<<"path end"<<std::endl;
-            break;
+            if(short_node_ < 2) break;
+            else
+            {
+                std::cout<<"back to short node: "<<short_node_<<std::endl;
+                for(int j=0;j<4;j++)
+                {
+                    nodes_.push_back(nodes_[short_node_-j]);
+                    geometry_msgs::PoseStamped pose_st;
+                    pose_st.pose = nodes_[short_node_-j].pose;
+                    nav_path_.poses.push_back(pose_st);
+                    pub_path_.publish(nav_path_);
+                    i++;
+                }
+                checking_point.x = nodes_[i-1].pose.position.x;
+                checking_point.y = nodes_[i-1].pose.position.y;
+            }
         }
 
+        if(!long_move && line_length < old_line_length) short_node_ = i-1;
         //move (only running)
         std::cout<<"only run"<<std::endl;
         point run_start = checking_point;
@@ -301,14 +329,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
                         close_y1 += 2*map.info.resolution * std::sin(moving_direction);
                     }
                     else break;
-                    // if(closed_len < line_length)
-                    // {
-                    //     passed_map_.data[xy_to_map(map,close_x,close_y)] = 100;
-                    //     close_x += map.info.resolution * std::cos(moving_direction);
-                    //     close_y += map.info.resolution * std::sin(moving_direction);
-                    // }
                     closed_len += map.info.resolution;
-                    // if(closed_len >line_length) flag =2;
                 }
                 checking_point.x = next_point.x;
                 checking_point.y = next_point.y;
@@ -320,6 +341,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             break;
         }
         publish_path();
+        if(i>2000) break;
     }
 }
 

@@ -58,6 +58,7 @@ class Zigzag
         geometry_msgs::Pose point_to_rosmsg(point p);
         int xy_to_map(nav_msgs::OccupancyGrid map, double x, double y);
         bool check_is_closed(point p);
+        void reset_all();
 
         //param
         point clicked_;
@@ -76,6 +77,8 @@ class Zigzag
         double move_direction_;
         double moved_direction_;
         double v_grav_;
+
+        int short_node_;
 
         std::string directions_[2] = {"head","keep"};
         std::vector<edge> edges_;

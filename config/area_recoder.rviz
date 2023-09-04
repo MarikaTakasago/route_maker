@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Grid1
         - /area1
         - /start_end1
         - /area_guide1
@@ -55,7 +56,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 150
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 0.699999988079071
@@ -176,7 +177,7 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: false
-    - Alpha: 0.10000000149011612
+    - Alpha: 0.5
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
@@ -213,7 +214,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.004999992437660694
+      Angle: 0.005000864155590534
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -223,10 +224,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 112.72525024414062
+      Scale: 39.45458221435547
       Target Frame: <Fixed Frame>
-      X: 0.7649425268173218
-      Y: -6.170341968536377
+      X: 8.937728881835938
+      Y: -3.7078232765197754
     Saved: ~
 Window Geometry:
   Displays:
