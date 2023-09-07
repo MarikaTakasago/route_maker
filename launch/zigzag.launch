@@ -1,21 +1,33 @@
 <?xml version="1.0"?>
 <launch>
+    <!-- map -->
+    <arg name="map" default="$(find route_maker)/map/dkan_demo0906_ed.yaml"/>
     <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/fix_axis.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/arisoumi_map.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/ari_gazebo.yaml"/> -->
     <!-- <arg name="map" default="/home/amsl/ari_gazebo.yaml"/> -->
-    <arg name="map" default="$(find route_maker)/map/d_gaze.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/d_gaze.yaml"/> -->
+
+    <!-- yaml -->
+    <!-- <arg name="yaml_file" default="$(find brushee_navigation_manager/path/gazebo_path.yaml"/> -->
+    <arg name="yaml_file" default="$(find brushee_navigation_manager)/path/otamesi.yaml"/>
+
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route_maker)/config/area_recoder.rviz"/>
     <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
     <node pkg="route_maker" type="map_expander" name="map_expander" output="screen">
-        <param name="width" value="1.0"/>
+        <param name="width" value="0.4"/>
     </node>
 
     <node pkg="route_maker" type="zigzag" name="zigzag" output="screen">
-        <param name="width" value="0.5"/>
+        <param name="width" value="0.8"/>
         <param name="length" value="0.8"/>
         <remap from="map" to="expanded_map"/>
     </node>
+
+    <node pkg="route_maker" type="msg_to_yaml.py" name="mst_to_yaml" output="screen">
+        <param name="~yaml_file" value="$(arg yaml_file)"/>
+    </node>
+
 </launch>

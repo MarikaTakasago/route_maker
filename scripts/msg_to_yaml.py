@@ -28,6 +28,7 @@ class MsgToYaml:
 
         self.nodes = []
         self.edges = []
+        self.nodenum = []
 
         self.path_dict = {}
         self.path_dict['PATH_FRAME'] = []
@@ -35,7 +36,7 @@ class MsgToYaml:
         self.path_dict['OCC_MAP_NAME'] = []
         self.path_dict['OCC_MAP_NAME'].append('map')
         self.path_dict['MAP_DIRECTION'] = []
-        self.path_dict['MAP_DIRECTION'].append('0.0')
+        self.path_dict['MAP_DIRECTION'].append(0.0)
         self.path_dict['NODE'] = []
         self.path_dict['EDGE'] = []
 
@@ -55,7 +56,7 @@ class MsgToYaml:
         for n in msg.nodes:
             n.pose.position.x = round(n.pose.position.x, 2)
             n.pose.position.y = round(n.pose.position.y, 2)
-            #if same x and y or node id as last node slip it
+            #if same x and y or node id as last node skip it
             id_checker = 0
             if len(self.nodes) > 0:
                 if n.pose.position.x == self.nodes[-1].pose.position.x and n.pose.position.y == self.nodes[-1].pose.position.y:
@@ -68,7 +69,10 @@ class MsgToYaml:
                         break
             if id_checker == 0:
                 self.nodes.append(node(n.id, n.type, n.pose, n.direction))
+                self.nodenum.append(n.id)
         for e in msg.edges:
+            if (e.start_node_id not in self.nodenum) or (e.end_node_id not in self.nodenum):
+                continue
             self.edges.append(edge(e.start_node_id, e.end_node_id, e.command, e.skippable))
         # print('nodes:', self.nodes)
         # print('edges:', self.edges)

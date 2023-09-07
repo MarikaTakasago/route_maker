@@ -91,7 +91,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
 {
     // put start point
     geometry_msgs::Pose pose = point_to_rosmsg(start);
-    struct node start_node = {0,0,pose,directions_[1]};
+    struct node start_node = {0,1,pose,directions_[1]};
     nodes_.push_back(start_node);
     struct point p = {start.x,start.y};
     passed_map_.data[xy_to_map(map,start.x,start.y)] = 100;
@@ -167,7 +167,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
                         else //if find the end of obstacles
                         {
                             geometry_msgs::Pose pose = point_to_rosmsg(next_p);
-                            struct node n = {i,0,pose,directions_[1]};
+                            struct node n = {i,1,pose,directions_[1]};
                             nodes_.push_back(n);
                             // closed_.push_back(checking_point);
                             closed_.push_back(next_p);
@@ -184,7 +184,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
                             checking_point.x = grav_p.x - 2*map.info.resolution*std::cos(v_grav_);
                             checking_point.y = grav_p.y - 2*map.info.resolution*std::sin(v_grav_);
                             geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                            struct node n = {i,0,pose,directions_[1]};
+                            struct node n = {i,1,pose,directions_[1]};
                             nodes_.push_back(n);
                             closed_.push_back(checking_point);
                             std::cout<<"long_move_end_node"<<i<<"("<<nodes_[i].pose.position.x<<","<<nodes_[i].pose.position.y<<")"<<std::endl;
@@ -217,7 +217,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             {
                 // put checking_point in nodes
                 geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                struct node n = {i,0,pose,directions_[0]};
+                struct node n = {i,1,pose,directions_[0]};
                 nodes_.push_back(n);
                 closed_.push_back(checking_point);
                 passed_map_.data[xy_to_map(map,checking_point.x,checking_point.y)] = 100;
@@ -298,7 +298,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             {
                 // put checking_point in nodes
                 geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                struct node n = {i,0,pose,directions_[1]};
+                struct node n = {i,1,pose,directions_[1]};
                 nodes_.push_back(n);
                 closed_.push_back(checking_point);
                 passed_map_.data[xy_to_map(map,checking_point.x,checking_point.y)] = 100;

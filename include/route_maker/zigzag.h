@@ -80,7 +80,7 @@ class Zigzag
 
         int short_node_;
 
-        std::string directions_[2] = {"head","keep"};
+        std::string directions_[2] = {"keep","head"};
         std::vector<edge> edges_;
         std::vector<node> nodes_;
 
