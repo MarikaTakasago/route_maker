@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <!-- map -->
-    <arg name="map" default="$(find route_maker)/map/dkan_demo0906_ed.yaml"/>
+    <arg name="map" default="$(find route_maker)/map/dkandemo0912.yaml"/>
     <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/fix_axis.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/arisoumi_map.yaml"/> -->
@@ -11,7 +11,7 @@
 
     <!-- yaml -->
     <!-- <arg name="yaml_file" default="$(find brushee_navigation_manager/path/gazebo_path.yaml"/> -->
-    <arg name="yaml_file" default="$(find brushee_navigation_manager)/path/otamesi.yaml"/>
+    <arg name="yaml_file" default="$(find brushee_navigation_manager)/path/dkandemo0912.yaml"/>
 
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find route_maker)/config/area_recoder.rviz"/>
