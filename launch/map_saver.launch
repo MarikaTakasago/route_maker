@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="file_name" default="map"/>
+    <node pkg="map_server" type="map_saver" name="map_saver" args="-f $(find route_maker)/map/$(arg file_name)">
+        <remap from="map" to="walled_map"/>
+    </node>
+</launch>

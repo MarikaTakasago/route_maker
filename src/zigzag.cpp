@@ -18,6 +18,7 @@ Zigzag::Zigzag(): private_nh_("~")
     get_map_ = false;
     clicked_counter_ = 0;
     is_invalid_ = false;
+    short_node_ = -1;
 
     //header
     nav_path_.header.frame_id ="map";
@@ -28,7 +29,7 @@ void Zigzag::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
     raw_map_ = *msg;
     passed_map_ = *msg;
     map_roughther(raw_map_);
-    std::cout<<"get map"<<std::endl;
+    if(!get_map_) std::cout<<"get map"<<std::endl;
     get_map_ = true;
 }
 
@@ -45,9 +46,10 @@ void Zigzag::clicked_callback(const geometry_msgs::PointStamped::ConstPtr &msg)
         clicked_.y = double(y);
         clicked_counter_++;
 
-        switch(clicked_counter_)
+        switch(clicked_counter_%3)
         {
             case 1:
+                reset_all();
                 start_ = clicked_;
                 std::cout<<"get start point ("<<clicked_.x<<","<<clicked_.y<<")"<<std::endl;
                 break;
@@ -57,11 +59,12 @@ void Zigzag::clicked_callback(const geometry_msgs::PointStamped::ConstPtr &msg)
                 std::cout<<"get move direction: "<<move_direction_<<std::endl;
                 break;
 
-            case 3:
+            case 0:
                 std::cout<<"get goal point ("<<clicked_.x<<","<<clicked_.y<<")"<<std::endl;
                 path_maker(raw_map_,move_direction_,start_,clicked_);
                 publish_path();
                 clicked_counter_ = 0; //reset counter
+                short_node_ = -1; //reset
                 break;
 
             default:
@@ -76,11 +79,19 @@ void Zigzag::map_roughther(nav_msgs::OccupancyGrid raw_map)
 
 }
 
+void Zigzag::reset_all()
+{
+    nodes_.clear();
+    edges_.clear();
+    closed_.clear();
+    nav_path_.poses.clear();
+}
+
 void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, point start, point goal)
 {
     // put start point
     geometry_msgs::Pose pose = point_to_rosmsg(start);
-    struct node start_node = {0,0,pose,directions_[1]};
+    struct node start_node = {0,1,pose,directions_[1]};
     nodes_.push_back(start_node);
     struct point p = {start.x,start.y};
     passed_map_.data[xy_to_map(map,start.x,start.y)] = 100;
@@ -95,8 +106,8 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
     struct point checking_point;
     checking_point.x = start.x;
     checking_point.y = start.y;
-    checking_point.x += map.info.resolution * cos(move_direction);
-    checking_point.y += map.info.resolution * cos(move_direction);
+    checking_point.x += 2*map.info.resolution * cos(move_direction);
+    checking_point.y += 2*map.info.resolution * cos(move_direction);
 
     //set vurtial gravity direction
     double v_grav_ = adjust_angle(set_moving_direction(map,move_direction,start)+M_PI);
@@ -123,58 +134,57 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
         {
             if(i>1)
             {
-                double old_direction = adjust_angle(std::atan2(nodes_[i-2].pose.position.y - nodes_[i-3].pose.position.y,nodes_[i-2].pose.position.x - nodes_[i-3].pose.position.x));
-                // std::cout<<"old: "<<old_direction<<std::endl;
-                if(!long_move && fabs(move_direction - old_direction) < 0.01) moving_direction = move_direction + M_PI;
+                if(!long_move) moving_direction = moved_direction_ + M_PI;
                 if(long_move)
                 {
-                    moving_direction = old_direction;
+                    moving_direction = moved_direction_;
                     std::cout<<"continue cleaning"<<std::endl;
                     std::cout<<"old_line_length: "<<old_line_length<<std::endl;
                 }
             }
             //check if next cell is obstacle
-            checking_point.x += map.info.resolution * std::cos(moving_direction);
-            checking_point.y += map.info.resolution * std::sin(moving_direction);
-            line_length += map.info.resolution;
-            if(i>1 && old_line_length + length_/2 <= line_length && !go_forward)
+            double next_x = checking_point.x + 2*map.info.resolution * std::cos(moving_direction);
+            double next_y = checking_point.y + 2*map.info.resolution * std::sin(moving_direction);
+            struct point next_p = {next_x, next_y};
+            if(long_move) std::cout<<"nx,ny:"<<next_x<<","<<next_y<<std::endl;
+            // checking_point.x += map.info.resolution * std::cos(moving_direction);
+            // checking_point.y += map.info.resolution * std::sin(moving_direction);
+            line_length += 2*map.info.resolution;
+            if(i>1 && old_line_length <= line_length && !go_forward)
             {
-                std::cout<<"long??"<<std::endl;
-                geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                struct node n = {i,0,pose,directions_[1]};
-                nodes_.push_back(n);
-                closed_.push_back(checking_point);
-                std::cout<<"go_down_node"<<i<<"("<<nodes_[i].pose.position.x<<","<<nodes_[i].pose.position.y<<")"<<std::endl;
-                geometry_msgs::PoseStamped pose_st;
-                pose_st.pose = pose;
-                nav_path_.poses.push_back(pose_st);
-                pub_path_.publish(nav_path_);
-                i++;
+                std::cout<<"long"<<std::endl;
                 //if gravity direction is unclosed move gravity direction
-                struct point grav_p;
-                grav_p.x = checking_point.x + map.info.resolution * std::cos(v_grav_);
-                grav_p.y = checking_point.y + map.info.resolution * std::sin(v_grav_);
-                std::cout<<"x,y: "<<grav_p.x<<","<<grav_p.y<<std::endl;
-                double lm_length = map.info.resolution;
+                struct point grav_p = next_p;
+                double lm_length = 0.0;
                 while(1)
                 {
-                    grav_p.x += map.info.resolution * std::cos(v_grav_);
-                    grav_p.y += map.info.resolution * std::sin(v_grav_);
-                    lm_length += map.info.resolution;
+                    grav_p.x += 2*map.info.resolution * std::cos(v_grav_);
+                    grav_p.y += 2*map.info.resolution * std::sin(v_grav_);
+                    lm_length += 2*map.info.resolution;
                     if(passed_map_.data[xy_to_map(passed_map_,grav_p.x,grav_p.y)] == 100)
                     {
-                        if(lm_length <= width_*2)
+                        if(lm_length <= width_*2) break;
+                        else //if find the end of obstacles
                         {
-                            go_forward = 1;
-                            break;
+                            geometry_msgs::Pose pose = point_to_rosmsg(next_p);
+                            struct node n = {i,1,pose,directions_[1]};
+                            nodes_.push_back(n);
+                            // closed_.push_back(checking_point);
+                            closed_.push_back(next_p);
+                            std::cout<<"go_down_node"<<i<<"("<<nodes_[i].pose.position.x<<","<<nodes_[i].pose.position.y<<")"<<std::endl;
+                            geometry_msgs::PoseStamped pose_st;
+                            pose_st.pose = pose;
+                            nav_path_.poses.push_back(pose_st);
+                            pub_path_.publish(nav_path_);
+                            i++;
+                            long_move = true;
                         }
-                        else
+                        if(long_move)
                         {
-                            checking_point.x = grav_p.x - 0.3 * std::cos(v_grav_);
-                            checking_point.y = grav_p.y - 0.3 * std::sin(v_grav_);
-
+                            checking_point.x = grav_p.x - 2*map.info.resolution*std::cos(v_grav_);
+                            checking_point.y = grav_p.y - 2*map.info.resolution*std::sin(v_grav_);
                             geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                            struct node n = {i,0,pose,directions_[1]};
+                            struct node n = {i,1,pose,directions_[1]};
                             nodes_.push_back(n);
                             closed_.push_back(checking_point);
                             std::cout<<"long_move_end_node"<<i<<"("<<nodes_[i].pose.position.x<<","<<nodes_[i].pose.position.y<<")"<<std::endl;
@@ -183,18 +193,19 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
                             nav_path_.poses.push_back(pose_st);
                             pub_path_.publish(nav_path_);
                             i++;
-                            long_move = true;
-                            std::cout<<"long_move"<<std::endl;
                             old_line_length = line_length;
                             line_length = 0;
                             std::cout<<"old_line_length: "<<old_line_length<<std::endl;
+                            next_p.x = checking_point.x+2*map.info.resolution*std::cos(moving_direction);
+                            next_p.y = checking_point.y+2*map.info.resolution*std::sin(moving_direction);
+                            moved_direction_ = moving_direction;
                             break;
                         }
                     }
                 }
             }
             // if invalid index
-            int next_index = xy_to_map(map,checking_point.x,checking_point.y);
+            int next_index = xy_to_map(map,next_p.x,next_p.y);
             if(next_index < 0 || next_index > map.data.size())
             {
                 std::cout<<"invalid index"<<std::endl;
@@ -205,11 +216,8 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             else if(map.data[next_index] == 100)
             {
                 // put checking_point in nodes
-                // consider length between base_link and head
-                checking_point.x -= length_/2 * std::cos(moving_direction);
-                checking_point.y -= length_/2 * std::sin(moving_direction);
                 geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                struct node n = {i,0,pose,directions_[0]};
+                struct node n = {i,1,pose,directions_[0]};
                 nodes_.push_back(n);
                 closed_.push_back(checking_point);
                 passed_map_.data[xy_to_map(map,checking_point.x,checking_point.y)] = 100;
@@ -226,8 +234,9 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             //if not obstacle
             else
             {
-                closed_.push_back(checking_point);
-                passed_map_.data[xy_to_map(map,checking_point.x,checking_point.y)] = 100;
+                closed_.push_back(next_p);
+                passed_map_.data[xy_to_map(map,next_p.x,next_p.y)] = 100;
+                checking_point = next_p;
             }
         }
         if(is_invalid_)
@@ -237,25 +246,46 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
         }
 
 
+        moved_direction_ = moving_direction;
         double next_moving_direction = set_moving_direction(map,moving_direction,checking_point);
-        if(next_moving_direction == -100 || fabs(next_moving_direction - v_grav_)<0.1)
+        // if(next_moving_direction == -100)
+        // {
+        //     std::cout<<"path end"<<std::endl;
+        //     break;
+        // }
+        if(next_moving_direction == -100 || (nodes_[i-2].pose.position.x == nodes_[i-3].pose.position.x && nodes_[i-2].pose.position.y == nodes_[i-3].pose.position.y))
         {
-            std::cout<<"path end"<<std::endl;
-            break;
+            if(short_node_ < 2) break;
+            else
+            {
+                std::cout<<"back to short node: "<<short_node_<<std::endl;
+                for(int j=0;j<4;j++)
+                {
+                    nodes_.push_back(nodes_[short_node_-j]);
+                    geometry_msgs::PoseStamped pose_st;
+                    pose_st.pose = nodes_[short_node_-j].pose;
+                    nav_path_.poses.push_back(pose_st);
+                    pub_path_.publish(nav_path_);
+                    i++;
+                }
+                checking_point.x = nodes_[i-1].pose.position.x;
+                checking_point.y = nodes_[i-1].pose.position.y;
+            }
         }
 
+        if(!long_move && line_length < old_line_length) short_node_ = i-1;
         //move (only running)
         std::cout<<"only run"<<std::endl;
         point run_start = checking_point;
         double distance = get_distance(checking_point, run_start);
-        long_move = false;
+        next_moving_direction = v_grav_ + M_PI;
         while(1)
         {
             //check if next cell is obstacle
             struct point next_point;
-            next_point.x = checking_point.x + map.info.resolution * std::cos(next_moving_direction);
-            next_point.y = checking_point.y + map.info.resolution * std::sin(next_moving_direction);
-            distance += get_distance(checking_point,next_point);
+            next_point.x = checking_point.x + 2*map.info.resolution * std::cos(next_moving_direction);
+            next_point.y = checking_point.y + 2*map.info.resolution * std::sin(next_moving_direction);
+            distance += 2*map.info.resolution;
             int next_index = xy_to_map(map,next_point.x,next_point.y);
             // if invalid index
             if(next_index < 0 || next_index > map.data.size())
@@ -268,7 +298,7 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             {
                 // put checking_point in nodes
                 geometry_msgs::Pose pose = point_to_rosmsg(checking_point);
-                struct node n = {i,0,pose,directions_[1]};
+                struct node n = {i,1,pose,directions_[1]};
                 nodes_.push_back(n);
                 closed_.push_back(checking_point);
                 passed_map_.data[xy_to_map(map,checking_point.x,checking_point.y)] = 100;
@@ -295,18 +325,11 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
                     if(closed_len < length_/2)
                     {
                         passed_map_.data[xy_to_map(map,close_x1,close_y1)] = 100;
-                        close_x1 += map.info.resolution * std::cos(moving_direction);
-                        close_y1 += map.info.resolution * std::sin(moving_direction);
+                        close_x1 += 2*map.info.resolution * std::cos(moving_direction);
+                        close_y1 += 2*map.info.resolution * std::sin(moving_direction);
                     }
                     else break;
-                    // if(closed_len < line_length)
-                    // {
-                    //     passed_map_.data[xy_to_map(map,close_x,close_y)] = 100;
-                    //     close_x += map.info.resolution * std::cos(moving_direction);
-                    //     close_y += map.info.resolution * std::sin(moving_direction);
-                    // }
                     closed_len += map.info.resolution;
-                    // if(closed_len >line_length) flag =2;
                 }
                 checking_point.x = next_point.x;
                 checking_point.y = next_point.y;
@@ -317,6 +340,8 @@ void Zigzag::path_maker(nav_msgs::OccupancyGrid map, double move_direction, poin
             std::cout<<"!!!!! invalid index !!!!!"<<std::endl;
             break;
         }
+        publish_path();
+        if(i>2000) break;
     }
 }
 
@@ -360,7 +385,7 @@ double Zigzag::set_moving_direction(nav_msgs::OccupancyGrid map,double current_d
         v1_next.y += map.info.resolution * std::sin(next_direction1);
         distance1 += map.info.resolution;
         int v1_index = xy_to_map(map,v1_next.x, v1_next.y);
-        is_closed1 = check_is_closed(v1_next);
+        // is_closed1 = check_is_closed(v1_next);
         if(map.data[v1_index] != 0 || is_closed1) is_wall1 = true;
 
         v2_next.x += map.info.resolution * std::cos(next_direction2);
@@ -429,7 +454,7 @@ void Zigzag::publish_path()
     pub_node_edge_.publish(path);
 }
 
-void Zigzag::fill_in_msg(std::vector<node> nodes,brushee_navigation_msgs::NodeEdge path)
+void Zigzag::fill_in_msg(std::vector<node> nodes,brushee_navigation_msgs::NodeEdge &path)
 {
     for(auto n : nodes)
     {

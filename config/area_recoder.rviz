@@ -6,13 +6,14 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Grid1
         - /area1
         - /start_end1
         - /area_guide1
         - /wall1
         - /Path1
         - /Map2
-        - /Map2/Status1
+        - /Map3
       Splitter Ratio: 0.5
     Tree Height: 455
   - Class: rviz/Selection
@@ -55,7 +56,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 150
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 0.699999988079071
@@ -170,9 +171,19 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: map
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Map
       Topic: /passed_map
+      Unreliable: false
+      Use Timestamp: false
+      Value: false
+    - Alpha: 0.5
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /expanded_map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -203,7 +214,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.34999990463256836
+      Angle: 0.005000864155590534
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -213,10 +224,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 162.6619110107422
+      Scale: 39.45458221435547
       Target Frame: <Fixed Frame>
-      X: -2.042881727218628
-      Y: -6.1978044509887695
+      X: 8.937728881835938
+      Y: -3.7078232765197754
     Saved: ~
 Window Geometry:
   Displays:
@@ -234,5 +245,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1386
-  X: 248
-  Y: 45
+  X: 367
+  Y: 1242

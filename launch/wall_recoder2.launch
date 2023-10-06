@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- <arg name="map" default="$(find route_maker)/map/dkan.yaml"/> -->
+    <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
+    <arg name="map" default="$(find route_maker)/map/dkandemo0912.yaml"/>
+
+    <node pkg="route_maker" type="wall_recoder2.py" name="area_recoder" output="screen"/>
+
+    <node pkg="map_server" type="map_server" name="map_server" args="$(arg map)"/>
+    <node pkg="rviz" type="rviz" name="viz" args="-d $(find route_maker)/config/wall_recorder2.rviz"/>
+</launch>

@@ -54,10 +54,11 @@ class Zigzag
         double get_distance(point a, point b);
         double adjust_angle(double angle);
         void publish_path();
-        void fill_in_msg(std::vector<node> nodes, brushee_navigation_msgs::NodeEdge path);
+        void fill_in_msg(std::vector<node> nodes, brushee_navigation_msgs::NodeEdge &path);
         geometry_msgs::Pose point_to_rosmsg(point p);
         int xy_to_map(nav_msgs::OccupancyGrid map, double x, double y);
         bool check_is_closed(point p);
+        void reset_all();
 
         //param
         point clicked_;
@@ -74,9 +75,12 @@ class Zigzag
 
         int clicked_counter_;
         double move_direction_;
+        double moved_direction_;
         double v_grav_;
 
-        std::string directions_[2] = {"head","keep"};
+        int short_node_;
+
+        std::string directions_[2] = {"keep","head"};
         std::vector<edge> edges_;
         std::vector<node> nodes_;
 

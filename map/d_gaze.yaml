@@ -1,0 +1,8 @@
+image: d_gaze_rot.pgm
+resolution: 0.050000
+# origin: [-41.000000, -56.00000, 0.16500]
+origin: [-50.000000, -49.00000, 0.00]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+

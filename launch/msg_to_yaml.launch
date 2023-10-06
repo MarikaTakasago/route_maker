@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- <arg name="yaml_file" default="$(find brushee_navigation_manager/path/gazebo_path.yaml"/> -->
+    <arg name="yaml_file" default="$(find brushee_navigation_manager)/path/d_gaze.yaml"/>
+
+    <node pkg="route_maker" type="msg_to_yaml.py" name="mst_to_yaml" output="screen">
+        <param name="~yaml_file" value="$(arg yaml_file)"/>
+    </node>
+</launch>
