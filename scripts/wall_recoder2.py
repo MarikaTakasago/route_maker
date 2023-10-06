@@ -3,8 +3,9 @@
 import rospy
 import yaml
 import math
+import copy
 
-from geometry_msgs.msg import PointStamped, Point
+from geometry_msgs.msg import PointStamped, Point, PoseStamped
 from visualization_msgs.msg import Marker, MarkerArray
 from nav_msgs.msg import OccupancyGrid
 
@@ -26,6 +27,7 @@ class WallRecoder:
 
         ## subscriber
         self.sub_point = rospy.Subscriber('clicked_point', PointStamped, self.point_callback)
+        self.sub_del_point = rospy.Subscriber('move_base_simple/goal', PoseStamped, self.del_point_callback)
         self.sub_map = rospy.Subscriber('map', OccupancyGrid, self.map_callback)
 
         ## publisher
@@ -66,10 +68,44 @@ class WallRecoder:
             self.wall.angle = round(angle, 3)
             length = math.sqrt((self.wall.end.x - self.wall.start.x)**2 + (self.wall.end.y - self.wall.start.y)**2)
             self.wall.length = round(length, 3)
-            self.draw_on_map(self.wall)
+            self.wall_array.walls.append(copy.deepcopy(self.wall))
+            self.draw_on_map(self.wall, 100)
             print('pub wall')
 
             self.id += 1
+
+    def del_point_callback(self,msg):
+        if len(self.points) %2 == 1:
+            print('error! cannot delete wall now')
+            return
+        if len(self.points) == 0:
+            print('no wall to delete')
+            return
+        x = round(msg.pose.position.x, 3)
+        y = round(msg.pose.position.y, 3)
+        z = round(msg.pose.position.z, 3)
+        clicked = Point(x,y,z)
+        delete_wall = self.check_nearest_wall(clicked)
+        if delete_wall == None:
+            print ('no wall to delete')
+            return
+        self.draw_on_map(delete_wall ,0)
+        self.wall_array.walls.remove(delete_wall)
+
+    def check_nearest_wall(self,clicked):
+        min_dist = 5
+        nearest_wall = Wall()
+        for wall in self.wall_array.walls:
+            a,b = self.get_line(wall.start.x, wall.start.y, wall.end.x, wall.end.y)
+            dist = self.get_distance(clicked,a,b)
+            if dist < min_dist:
+                min_dist = dist
+                nearest_wall = wall
+                print(dist)
+        if dist != 5:
+            return nearest_wall
+        else:
+            return None
 
     def show_clicked_point(self,clicked):
         marker = Marker()
@@ -92,7 +128,7 @@ class WallRecoder:
         marker.pose.position.z = clicked.z
         self.pub_clicked_point.publish(marker)
 
-    def draw_on_map(self,wall):
+    def draw_on_map(self,wall, value):
         start_x, start_y = self.map_to_grid(wall.start.x, wall.start.y)
         end_x, end_y = self.map_to_grid(wall.end.x, wall.end.y)
         a,b = self.get_line(start_x, start_y, end_x, end_y)
@@ -103,7 +139,7 @@ class WallRecoder:
         while x <= max_x:
             y = int(a*x + b)
             index = int(self.map.info.width * y + x)
-            self.walled_map.data[index] = 100
+            self.walled_map.data[index] = value
             x += self.map.info.resolution
 
         self.pub_map.publish(self.walled_map)
@@ -114,9 +150,16 @@ class WallRecoder:
         return grid_x, grid_y
 
     def get_line(self,x1,y1,x2,y2):
-        a = (y1 - y2) / (x1 - x2)
+        if x1 == x2:
+            a = 0
+        else:
+            a = (y1 - y2) / (x1 - x2)
         b = y1 - a*x1
         return a,b
+
+    def get_distance(self,point,a,b):
+        dist = abs(a*point.x - point.y + b) / math.sqrt(a**2 + 1)
+        return dist
 
     def main(self):
         rospy.spin()
