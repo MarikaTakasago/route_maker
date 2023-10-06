@@ -17,7 +17,7 @@ class WallRecoder:
         print('=== Wall Recorder ===')
 
         ## check param
-
+        self.hz = rospy.get_param('~hz', 10)
         self.points = []
         self.id = 0
         self.wall = Wall()
@@ -142,7 +142,7 @@ class WallRecoder:
             self.walled_map.data[index] = value
             x += self.map.info.resolution
 
-        self.pub_map.publish(self.walled_map)
+        # self.pub_map.publish(self.walled_map)
 
     def map_to_grid(self,x,y):
         grid_x = int((x - self.map.info.origin.position.x) / self.map.info.resolution)
@@ -162,7 +162,10 @@ class WallRecoder:
         return dist
 
     def main(self):
-        rospy.spin()
+        rate = rospy.Rate(self.hz)
+        while not rospy.is_shutdown():
+            self.pub_map.publish(self.walled_map)
+            rate.sleep()
 
 if __name__ == '__main__':
     wall_recoder = WallRecoder()
