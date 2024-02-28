@@ -2,7 +2,8 @@
 <launch>
     <!-- <arg name="map" default="$(find route_maker)/map/dkan.yaml"/> -->
     <!-- <arg name="map" default="$(find route_maker)/map/Urange20Xmin25Ymin25.yaml"/> -->
-    <arg name="map" default="$(find route_maker)/map/dkandemo0912.yaml"/>
+    <arg name="map" default="/home/amsl/demo_booth_test_1114.yaml"/>
+    <!-- <arg name="map" default="$(find route_maker)/map/dkandemo0912.yaml"/> -->
 
     <node pkg="route_maker" type="wall_recoder2.py" name="area_recoder" output="screen"/>
 
